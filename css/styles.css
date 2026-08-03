@@ -178,10 +178,9 @@ p{margin:0;}
   transition:background .35s ease, backdrop-filter .35s ease, border-color .35s ease, box-shadow .35s ease;
 }
 .nav.scrolled{
-  background:color-mix(in srgb, var(--paper) 78%, transparent);
+  background:color-mix(in srgb, #f5f4f859 78%, transparent);
   backdrop-filter:blur(18px) saturate(1.4);
   -webkit-backdrop-filter:blur(18px) saturate(1.4);
-  border-bottom-color:var(--line);
   box-shadow:0 12px 34px -20px rgba(13,61,75,.45);
 }
 .nav .wrap{display:flex;align-items:center;justify-content:space-between;height:78px;gap:2rem;}
