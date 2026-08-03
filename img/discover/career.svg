@@ -1,0 +1,41 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 480 300">
+  <defs>
+    <linearGradient id="careerBg" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0%" stop-color="#241d2b"/>
+      <stop offset="55%" stop-color="#1a1520"/>
+      <stop offset="100%" stop-color="#110e17"/>
+    </linearGradient>
+    <radialGradient id="careerGlow" cx="80%" cy="85%" r="55%">
+      <stop offset="0%" stop-color="#8F4555" stop-opacity=".3"/>
+      <stop offset="100%" stop-color="#8F4555" stop-opacity="0"/>
+    </radialGradient>
+    <pattern id="careerGrid" width="30" height="30" patternUnits="userSpaceOnUse">
+      <path d="M30 0H0V30" fill="none" stroke="#E4E2F2" stroke-opacity=".07"/>
+    </pattern>
+  </defs>
+  <rect width="480" height="300" fill="url(#careerBg)"/>
+  <rect width="480" height="300" fill="url(#careerGrid)"/>
+  <rect width="480" height="300" fill="url(#careerGlow)"/>
+
+  <!-- growth bars -->
+  <g opacity=".9">
+    <rect x="60" y="190" width="30" height="50" rx="4" fill="#8073B5"/>
+    <rect x="106" y="160" width="30" height="80" rx="4" fill="#8073B5"/>
+    <rect x="152" y="120" width="30" height="120" rx="4" fill="#8F4555"/>
+  </g>
+  <path d="M60 195 L106 165 L152 122 L204 90" fill="none" stroke="#F1E3E6" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+  <path d="M186 90 L204 90 L204 108" fill="none" stroke="#F1E3E6" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+
+  <!-- briefcase -->
+  <g transform="translate(330,170)">
+    <rect x="-58" y="-14" width="116" height="80" rx="10" fill="none" stroke="#BDC1DF" stroke-width="2.2"/>
+    <path d="M-24 -14 L-24 -32 C-24 -40 -18 -46 -10 -46 L10 -46 C18 -46 24 -40 24 -32 L24 -14"
+      fill="none" stroke="#BDC1DF" stroke-width="2.2" stroke-linejoin="round"/>
+    <line x1="-58" y1="14" x2="58" y2="14" stroke="#BDC1DF" stroke-width="1.6" opacity=".7"/>
+    <rect x="-9" y="4" width="18" height="16" rx="3" fill="#8F4555"/>
+  </g>
+
+  <circle cx="420" cy="60" r="5" fill="#8073B5"/>
+  <circle cx="46" cy="70" r="4" fill="#BDC1DF"/>
+  <circle cx="440" cy="240" r="4" fill="#F1E3E6"/>
+</svg>

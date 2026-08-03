@@ -1,0 +1,43 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 480 300">
+  <defs>
+    <linearGradient id="labBg" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0%" stop-color="#1c2429"/>
+      <stop offset="55%" stop-color="#171a20"/>
+      <stop offset="100%" stop-color="#100e17"/>
+    </linearGradient>
+    <radialGradient id="labGlow" cx="82%" cy="20%" r="55%">
+      <stop offset="0%" stop-color="#8F4555" stop-opacity=".3"/>
+      <stop offset="100%" stop-color="#8F4555" stop-opacity="0"/>
+    </radialGradient>
+    <pattern id="labGrid" width="30" height="30" patternUnits="userSpaceOnUse">
+      <path d="M30 0H0V30" fill="none" stroke="#E4E2F2" stroke-opacity=".07"/>
+    </pattern>
+  </defs>
+  <rect width="480" height="300" fill="url(#labBg)"/>
+  <rect width="480" height="300" fill="url(#labGrid)"/>
+  <rect width="480" height="300" fill="url(#labGlow)"/>
+
+  <!-- flask -->
+  <g transform="translate(178,150)">
+    <path d="M-14 -60 L-14 -20 L-52 62 C-58 76 -48 90 -32 90 L52 90 C68 90 78 76 72 62 L34 -20 L34 -60"
+      fill="none" stroke="#BDC1DF" stroke-width="2.2" stroke-linejoin="round" stroke-linecap="round"/>
+    <path d="M-22 -60 L42 -60" stroke="#BDC1DF" stroke-width="2.2" stroke-linecap="round"/>
+    <path d="M-40 40 C-10 24 34 24 58 46 L48 62 C24 46 -10 46 -32 60 Z" fill="#8073B5" opacity=".55"/>
+    <circle cx="10" cy="18" r="6" fill="none" stroke="#8F4555" stroke-width="1.6"/>
+    <circle cx="-6" cy="46" r="4" fill="none" stroke="#8F4555" stroke-width="1.6"/>
+    <circle cx="24" cy="52" r="3" fill="#F1E3E6"/>
+  </g>
+
+  <!-- molecule -->
+  <g transform="translate(330,110)" stroke="#F1E3E6" stroke-width="1.6" opacity=".85">
+    <path d="M0 0 L46 -26 M0 0 L46 26 M0 0 L-10 46"/>
+    <circle cx="0" cy="0" r="8" fill="#1B1824" stroke="#8073B5" stroke-width="2"/>
+    <circle cx="46" cy="-26" r="6" fill="#1B1824" stroke="#BDC1DF" stroke-width="1.8"/>
+    <circle cx="46" cy="26" r="6" fill="#1B1824" stroke="#BDC1DF" stroke-width="1.8"/>
+    <circle cx="-10" cy="46" r="6" fill="#1B1824" stroke="#BDC1DF" stroke-width="1.8"/>
+  </g>
+
+  <circle cx="60" cy="240" r="4" fill="#8073B5"/>
+  <circle cx="410" cy="230" r="5" fill="#8F4555"/>
+  <circle cx="430" cy="60" r="4" fill="#BDC1DF"/>
+</svg>
