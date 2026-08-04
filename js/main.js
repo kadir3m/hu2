@@ -288,16 +288,6 @@ document.querySelectorAll('.news-filter').forEach(btn => {
   }
 })();
 
-// ---------- utility bar: language toggle ----------
-const langToggle = document.getElementById('langToggle');
-if (langToggle){
-  langToggle.querySelectorAll('button').forEach(btn => {
-    btn.addEventListener('click', () => {
-      langToggle.querySelectorAll('button').forEach(b => b.classList.toggle('active', b === btn));
-    });
-  });
-}
-
 // ---------- mobile app tab bar ----------
 const appTabbar = document.getElementById('appTabbar');
 if (appTabbar){
