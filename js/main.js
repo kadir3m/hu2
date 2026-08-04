@@ -37,16 +37,7 @@ videoModalClose.addEventListener('click', closeVideoModal);
 document.addEventListener('keydown', (e) => { if (e.key === 'Escape') closeVideoModal(); });
 
 const quickRail = document.getElementById('quickRail');
-const railClose = document.getElementById('railClose');
-const railToggle = document.getElementById('railToggle');
-railClose.addEventListener('click', () => {
-  quickRail.classList.add('collapsed');
-  railToggle.classList.add('show');
-});
-railToggle.addEventListener('click', () => {
-  quickRail.classList.remove('collapsed');
-  railToggle.classList.remove('show');
-});
+const railHandle = document.getElementById('railHandle');
 
 function railBounds(){
   const navBottom = navEl.getBoundingClientRect().bottom;
@@ -58,7 +49,6 @@ function setRailY(px){
   const { min, max } = railBounds();
   const clamped = Math.min(max, Math.max(min, px));
   quickRail.style.top = clamped + 'px';
-  railToggle.style.top = clamped + 'px';
 }
 
 function enableVerticalDrag(handle){
@@ -66,10 +56,10 @@ function enableVerticalDrag(handle){
   const suppressClick = (e) => { e.stopPropagation(); e.preventDefault(); };
 
   handle.addEventListener('pointerdown', (e) => {
-    if (e.target.closest('.rail-close')) return;
     dragging = true; moved = false;
     startY = e.clientY;
     startTop = parseFloat(getComputedStyle(quickRail).top) || window.innerHeight / 2;
+    quickRail.classList.add('dragging');
     handle.setPointerCapture(e.pointerId);
   });
   handle.addEventListener('pointermove', (e) => {
@@ -81,13 +71,18 @@ function enableVerticalDrag(handle){
   handle.addEventListener('pointerup', (e) => {
     if (!dragging) return;
     dragging = false;
+    quickRail.classList.remove('dragging');
     handle.releasePointerCapture(e.pointerId);
-    if (moved) handle.addEventListener('click', suppressClick, { once:true, capture:true });
+    if (moved) {
+      handle.addEventListener('click', suppressClick, { once:true, capture:true });
+    } else {
+      const open = quickRail.classList.toggle('open');
+      handle.setAttribute('aria-expanded', open ? 'true' : 'false');
+    }
   });
 }
 
-enableVerticalDrag(railToggle);
-enableVerticalDrag(document.querySelector('.rail-head'));
+enableVerticalDrag(railHandle);
 
 window.addEventListener('resize', () => {
   if (quickRail.style.top) setRailY(parseFloat(quickRail.style.top));
