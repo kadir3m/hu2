@@ -1,7 +1,7 @@
 // ---------- language switcher: translation dictionary + engine ----------
 const translations = {
   tr: {
-    'aria.close':'Kapat','aria.location':'Konum','aria.menu':'Menü','aria.next':'Sonraki','aria.prev':'Önceki','aria.search':'Ara',
+    'aria.close':'Kapat','aria.location':'Konum','aria.menu':'Menü','aria.next':'Sonraki','aria.prev':'Önceki','aria.search':'Ara','aria.scrollTop':'Yukarı çık',
     'rail.title':'Hızlı Erişim',
     'brand.name':'Hacettepe Üniversitesi','brand.sub':'Mühendislik Fakültesi',
     'nav.home':'Anasayfa','nav.academic':'Akademik','nav.research':'Araştırma','nav.institutional':'Kurumsal',
@@ -100,7 +100,7 @@ const translations = {
     'video.unsupported':'Tarayıcınız video oynatmayı desteklemiyor.'
   },
   en: {
-    'aria.close':'Close','aria.location':'Location','aria.menu':'Menu','aria.next':'Next','aria.prev':'Previous','aria.search':'Search',
+    'aria.close':'Close','aria.location':'Location','aria.menu':'Menu','aria.next':'Next','aria.prev':'Previous','aria.search':'Search','aria.scrollTop':'Scroll to top',
     'rail.title':'Quick Access',
     'brand.name':'Hacettepe University','brand.sub':'Faculty of Engineering',
     'nav.home':'Home','nav.academic':'Academics','nav.research':'Research','nav.institutional':'Institutional',
@@ -213,18 +213,25 @@ function applyLanguage(lang){
   try { localStorage.setItem('lang', lang); } catch (e) {}
 }
 
-const langToggle = document.getElementById('langToggle');
-if (langToggle){
-  langToggle.querySelectorAll('button').forEach(btn => {
-    btn.addEventListener('click', () => {
-      langToggle.querySelectorAll('button').forEach(b => b.classList.toggle('active', b === btn));
-      applyLanguage(btn.dataset.lang);
+const langToggles = document.querySelectorAll('.lang-toggle');
+if (langToggles.length){
+  function setActiveLangButtons(lang){
+    langToggles.forEach(toggle => {
+      toggle.querySelectorAll('button').forEach(b => b.classList.toggle('active', b.dataset.lang === lang));
+    });
+  }
+  langToggles.forEach(toggle => {
+    toggle.querySelectorAll('button').forEach(btn => {
+      btn.addEventListener('click', () => {
+        setActiveLangButtons(btn.dataset.lang);
+        applyLanguage(btn.dataset.lang);
+      });
     });
   });
   let savedLang = 'tr';
   try { savedLang = localStorage.getItem('lang') || 'tr'; } catch (e) {}
   if (savedLang !== 'tr'){
-    langToggle.querySelectorAll('button').forEach(b => b.classList.toggle('active', b.dataset.lang === savedLang));
+    setActiveLangButtons(savedLang);
     applyLanguage(savedLang);
   }
 }

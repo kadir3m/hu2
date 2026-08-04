@@ -288,6 +288,22 @@ document.querySelectorAll('.news-filter').forEach(btn => {
   }
 })();
 
+// ---------- scroll-to-top button ----------
+(function(){
+  const scrollTopBtn = document.getElementById('scrollTopBtn');
+  if (!scrollTopBtn) return;
+
+  function toggleVisible(){
+    scrollTopBtn.classList.toggle('visible', window.scrollY > window.innerHeight * 0.6);
+  }
+  window.addEventListener('scroll', toggleVisible, { passive:true });
+  toggleVisible();
+
+  scrollTopBtn.addEventListener('click', () => {
+    window.scrollTo({ top:0, behavior: reduceMotion ? 'auto' : 'smooth' });
+  });
+})();
+
 // ---------- mobile app tab bar ----------
 const appTabbar = document.getElementById('appTabbar');
 if (appTabbar){
