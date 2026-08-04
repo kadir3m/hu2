@@ -93,16 +93,6 @@ window.addEventListener('resize', () => {
   if (quickRail.style.top) setRailY(parseFloat(quickRail.style.top));
 });
 
-const cards = document.querySelectorAll('.card');
-if ('IntersectionObserver' in window && !reduceMotion){
-  const io = new IntersectionObserver((entries) => {
-    entries.forEach(e => { if (e.isIntersecting){ e.target.classList.add('in'); io.unobserve(e.target); } });
-  }, { threshold: .18 });
-  cards.forEach(c => io.observe(c));
-} else {
-  cards.forEach(c => c.classList.add('in'));
-}
-
 // ---------- desktop: one scroll gesture jumps to the next/previous full-screen section ----------
 (function(){
   if (reduceMotion) return;
@@ -257,6 +247,51 @@ document.querySelectorAll('.news-filter').forEach(btn => {
     document.querySelectorAll('.news-filter').forEach(b => b.classList.toggle('active', b === btn));
   });
 });
+
+// ---------- stats: count-up animation when the section is scrolled into view ----------
+(function(){
+  const statCards = document.querySelectorAll('#istatistikler .stat-card');
+  if (!statCards.length) return;
+
+  statCards.forEach((card, i) => { card.style.transitionDelay = (i * 0.08) + 's'; });
+
+  function formatNumber(n){ return Math.round(n).toLocaleString('tr-TR'); }
+
+  function animateCount(el, target){
+    const duration = 1400;
+    const start = performance.now();
+    function tick(now){
+      const p = Math.min((now - start) / duration, 1);
+      const eased = 1 - Math.pow(1 - p, 3);
+      el.textContent = formatNumber(eased * target);
+      if (p < 1) requestAnimationFrame(tick);
+    }
+    requestAnimationFrame(tick);
+  }
+
+  function reveal(card){
+    card.classList.add('in');
+    const numEl = card.querySelector('.stat-number');
+    const target = parseInt(numEl.dataset.target, 10);
+    if (reduceMotion || isNaN(target)) {
+      if (!isNaN(target)) numEl.textContent = formatNumber(target);
+    } else {
+      numEl.textContent = '0';
+      animateCount(numEl, target);
+    }
+  }
+
+  if ('IntersectionObserver' in window){
+    const io = new IntersectionObserver((entries) => {
+      entries.forEach(entry => {
+        if (entry.isIntersecting){ reveal(entry.target); io.unobserve(entry.target); }
+      });
+    }, { threshold: .35 });
+    statCards.forEach(c => io.observe(c));
+  } else {
+    statCards.forEach(reveal);
+  }
+})();
 
 // ---------- mobile app tab bar ----------
 const appTabbar = document.getElementById('appTabbar');
