@@ -80,14 +80,13 @@
 }
 
 *{box-sizing:border-box;}
-html{scroll-behavior:smooth;}
+html{scroll-behavior:smooth;overflow-x:clip;}
 body{
   margin:0;
   background:var(--paper);
   color:var(--ink);
   font-family:var(--font-body);
   -webkit-font-smoothing:antialiased;
-  overflow-x:hidden;
 }
 a{color:inherit;text-decoration:none;}
 button{font:inherit;color:inherit;background:none;border:none;cursor:pointer;}
@@ -150,6 +149,18 @@ p{margin:0;}
   backdrop-filter:blur(18px) saturate(1.4);
   -webkit-backdrop-filter:blur(18px) saturate(1.4);
   box-shadow:0 12px 34px -20px rgba(13,61,75,.45);
+}
+@media (max-width:900px){
+  .nav.scrolled{
+    background:var(--paper-raised);
+    backdrop-filter:none;-webkit-backdrop-filter:none;
+  }
+  .nav.scrolled .brand-text .top{color:var(--ink);}
+  .nav.scrolled .brand-text .sub{color:var(--ink-soft);}
+  .nav.scrolled .nav-actions .icon-btn,
+  .nav.scrolled .nav-actions .hamburger{border-color:var(--line-strong);color:var(--ink);}
+  .nav.scrolled .nav-actions .icon-btn:hover,
+  .nav.scrolled .nav-actions .hamburger:hover{border-color:var(--garnet);background:var(--garnet-tint);color:var(--garnet);}
 }
 .nav .wrap{display:flex;align-items:center;justify-content:space-between;height:78px;gap:2rem;}
 .brand{display:flex;align-items:center;}
@@ -261,19 +272,80 @@ p{margin:0;}
   .menu,.nav-actions .btn-ghost{display:none;}
   .hamburger{display:flex;}
 }
+.mobile-panel-backdrop{
+  position:fixed;inset:0;z-index:88;
+  background:rgba(10,8,14,.5);backdrop-filter:blur(2px);-webkit-backdrop-filter:blur(2px);
+  opacity:0;visibility:hidden;
+  transition:opacity .3s ease,visibility 0s linear .3s;
+}
+.mobile-panel-backdrop.open{
+  opacity:1;visibility:visible;
+  transition:opacity .3s ease,visibility 0s linear 0s;
+}
 .mobile-panel{
-  display:none;flex-direction:column;gap:.15rem;padding:1rem clamp(1.25rem,4vw,3rem) 1.5rem;
-  border-bottom:1px solid var(--line);
-  background:color-mix(in srgb, var(--paper) 94%, transparent);
-  backdrop-filter:blur(14px);
+  /* stays within the viewport's own bounds at all times (right:0, width <= viewport) —
+     hidden via clip-path rather than an off-screen transform, since a fixed element whose
+     painted box extends past the edge of the screen makes mobile browsers misjudge the
+     layout viewport width, which in turn breaks the sticky top nav and fixed bottom tab bar.
+     clip-path lives on this outer box only — NOT together with overflow-y — because clipping
+     and scrolling on the same box causes a rendering glitch (partially blank/faded content). */
+  position:fixed;top:0;right:0;bottom:0;z-index:89;
+  width:min(78vw,300px);
+  background:var(--paper-raised);
+  box-shadow:-24px 0 60px -24px rgba(20,17,28,.45);
+  clip-path:inset(0 0 0 100%);
+  transition:clip-path .38s cubic-bezier(.16,.8,.4,1);
 }
-.mobile-panel.open{display:flex;}
-.mobile-panel a{padding:.7rem .2rem;border-bottom:1px solid var(--line);font-weight:600;font-size:.92rem;transition:color .15s,padding-left .15s;}
+.mobile-panel.open{
+  clip-path:inset(0 0 0 0%);
+}
+.mobile-panel-inner{
+  position:absolute;inset:0;
+  display:flex;flex-direction:column;gap:.1rem;
+  padding:4.4rem 1.3rem 1.5rem;
+  overflow-y:auto;
+  pointer-events:none;
+}
+.mobile-panel.open .mobile-panel-inner{pointer-events:auto;}
+.mobile-panel-close{
+  position:absolute;top:1.1rem;right:1.1rem;
+  width:34px;height:34px;border-radius:50%;flex:none;
+  display:flex;align-items:center;justify-content:center;color:var(--ink-soft);
+  border:1px solid var(--line-strong);transition:border-color .15s,color .15s,background .15s;
+}
+.mobile-panel-close svg{width:16px;height:16px;}
+.mobile-panel-close:hover{border-color:var(--garnet);color:var(--garnet);background:var(--garnet-tint);}
+.mobile-panel a{padding:.55rem .15rem;border-bottom:1px solid var(--line);font-weight:600;font-size:.82rem;transition:color .15s,padding-left .15s;}
 .mobile-panel a:hover{color:var(--garnet);padding-left:.4rem;}
-.mobile-panel-label{
-  display:block;margin-top:.7rem;padding:.4rem .2rem 0;
-  font-family:var(--font-mono);font-size:.62rem;letter-spacing:.12em;text-transform:uppercase;color:var(--ink-soft);
+.mobile-panel a.mobile-panel-login{
+  display:flex;align-items:center;justify-content:center;
+  margin:0 0 .8rem;padding:.7rem 1rem;border-radius:99px;border-bottom:none;
+  background:var(--grad-flash);color:#fff;font-weight:700;box-shadow:var(--glow-garnet);
 }
+.mobile-panel a.mobile-panel-login:hover{color:#fff;padding-left:1rem;}
+.mobile-panel-label{
+  display:block;margin-top:.85rem;padding:.3rem .15rem 0;
+  font-family:var(--font-mono);font-size:.58rem;letter-spacing:.12em;text-transform:uppercase;color:var(--ink-soft);
+}
+.mobile-panel-label:first-child{margin-top:0;}
+.mobile-panel-lang{
+  display:flex;gap:.4rem;margin-top:1rem;
+}
+.mobile-panel-lang button{
+  flex:1;padding:.45rem 0;border-radius:8px;border:1px solid var(--line-strong);
+  background:transparent;color:var(--ink-soft);font-size:.76rem;font-weight:700;letter-spacing:.04em;
+  transition:background .15s,border-color .15s,color .15s;
+}
+.mobile-panel-lang button.active{background:var(--grad-flash);border-color:transparent;color:#fff;}
+.mobile-panel-social{display:flex;gap:.5rem;margin-top:.9rem;justify-content:flex-start;}
+.mobile-panel-social a{
+  width:32px;height:32px;border-radius:50%;flex:none;
+  display:flex;align-items:center;justify-content:center;
+  background:var(--grad-flash-soft);color:var(--garnet-deep);
+  transition:background .15s,transform .15s;
+}
+.mobile-panel-social a svg{width:15px;height:15px;}
+.mobile-panel-social a:hover{background:var(--grad-flash);color:#fff;transform:translateY(-2px);}
 
 /* ---------- hero ---------- */
 .hero{

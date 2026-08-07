@@ -5,7 +5,20 @@ window.addEventListener('scroll', () => {
 
 const hamburger = document.getElementById('hamburger');
 const mobilePanel = document.getElementById('mobilePanel');
-hamburger.addEventListener('click', () => mobilePanel.classList.toggle('open'));
+const mobilePanelBackdrop = document.getElementById('mobilePanelBackdrop');
+const mobilePanelClose = document.getElementById('mobilePanelClose');
+
+function setMobilePanelOpen(open){
+  mobilePanel.classList.toggle('open', open);
+  mobilePanelBackdrop.classList.toggle('open', open);
+  document.body.style.overflow = open ? 'hidden' : '';
+}
+
+hamburger.addEventListener('click', () => setMobilePanelOpen(!mobilePanel.classList.contains('open')));
+mobilePanelClose.addEventListener('click', () => setMobilePanelOpen(false));
+mobilePanelBackdrop.addEventListener('click', () => setMobilePanelOpen(false));
+mobilePanel.querySelectorAll('a').forEach(link => link.addEventListener('click', () => setMobilePanelOpen(false)));
+document.addEventListener('keydown', (e) => { if (e.key === 'Escape') setMobilePanelOpen(false); });
 
 const reduceMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
 
@@ -87,6 +100,71 @@ enableVerticalDrag(railHandle);
 window.addEventListener('resize', () => {
   if (quickRail.style.top) setRailY(parseFloat(quickRail.style.top));
 });
+
+// ---------- desktop only: one scroll gesture jumps to the next/previous full-screen section (mobile keeps free scroll) ----------
+(function(){
+  if (reduceMotion) return;
+  const mql = window.matchMedia('(min-width:901px)');
+
+  function getStops(){
+    const stops = [0];
+    ['programlar', 'duyurular', 'haberler', 'istatistikler'].forEach(id => {
+      const el = document.getElementById(id);
+      if (el) stops.push(el.getBoundingClientRect().top + window.scrollY);
+    });
+    const footerEl = document.querySelector('footer');
+    if (footerEl) stops.push(footerEl.getBoundingClientRect().top + window.scrollY);
+    return stops;
+  }
+
+  function currentIndex(stops){
+    let idx = 0;
+    stops.forEach((y, i) => { if (window.scrollY >= y - 2) idx = i; });
+    return idx;
+  }
+
+  let animating = false;
+  let unlockTimer = null;
+
+  function goTo(y){
+    animating = true;
+    window.scrollTo({ top: y, behavior: 'smooth' });
+    clearTimeout(unlockTimer);
+    unlockTimer = setTimeout(() => { animating = false; }, 800);
+  }
+  window.addEventListener('scrollend', () => { animating = false; clearTimeout(unlockTimer); });
+
+  function jump(direction){
+    if (animating) return;
+    const stops = getStops();
+    const maxScroll = document.documentElement.scrollHeight - window.innerHeight;
+    const idx = currentIndex(stops);
+    if (direction > 0){
+      const next = stops[idx + 1];
+      if (next === undefined || next > maxScroll + 1) return;
+      goTo(Math.min(next, maxScroll));
+    } else {
+      const prev = stops[idx - 1];
+      if (prev === undefined) return;
+      goTo(prev);
+    }
+  }
+
+  window.addEventListener('wheel', (e) => {
+    if (!mql.matches) return;
+    if (animating){ e.preventDefault(); return; }
+    if (e.deltaY > 0){ e.preventDefault(); jump(1); }
+    else if (e.deltaY < 0){ e.preventDefault(); jump(-1); }
+  }, { passive:false });
+
+  window.addEventListener('keydown', (e) => {
+    if (!mql.matches || animating) return;
+    const tag = (e.target.tagName || '').toLowerCase();
+    if (tag === 'input' || tag === 'textarea' || e.target.isContentEditable) return;
+    if (e.key === 'PageDown'){ e.preventDefault(); jump(1); }
+    else if (e.key === 'PageUp'){ e.preventDefault(); jump(-1); }
+  });
+})();
 
 // ---------- announcements: tab switching ----------
 document.querySelectorAll('.announce-tab').forEach(tab => {
@@ -172,13 +250,10 @@ document.querySelectorAll('.news-filter').forEach(btn => {
 const appTabbar = document.getElementById('appTabbar');
 if (appTabbar){
   const appTabs = Array.from(appTabbar.querySelectorAll('.app-tab'));
-  const appTabMenu = document.getElementById('appTabMenu');
 
   function setActiveTab(target){
     appTabs.forEach(t => t.classList.toggle('active', t.dataset.target === target));
   }
-
-  appTabMenu.addEventListener('click', () => mobilePanel.classList.toggle('open'));
 
   appTabs.forEach(tab => {
     if (tab.tagName === 'A'){
