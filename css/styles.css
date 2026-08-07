@@ -270,6 +270,10 @@ p{margin:0;}
 .mobile-panel.open{display:flex;}
 .mobile-panel a{padding:.7rem .2rem;border-bottom:1px solid var(--line);font-weight:600;font-size:.92rem;transition:color .15s,padding-left .15s;}
 .mobile-panel a:hover{color:var(--garnet);padding-left:.4rem;}
+.mobile-panel-label{
+  display:block;margin-top:.7rem;padding:.4rem .2rem 0;
+  font-family:var(--font-mono);font-size:.62rem;letter-spacing:.12em;text-transform:uppercase;color:var(--ink-soft);
+}
 
 /* ---------- hero ---------- */
 .hero{
@@ -345,14 +349,15 @@ p{margin:0;}
 .hero-video-btn svg{width:19px;height:19px;flex:none;}
 
 @media (max-width:640px){
-  .hero{height:min(74vh,640px);}
-  .hero-inner{padding-top:calc(4.5rem + 78px);padding-bottom:3.25rem;}
-  .hero h1{font-size:clamp(2rem,9vw,2.6rem);max-width:100%;}
-  .hero-meta{margin-top:1.2rem;}
-  .hero-meta span:nth-child(even){display:none;}
-  .hero-cta{flex-direction:column;align-items:stretch;margin-top:1.8rem;gap:.65rem;}
-  .hero-cta a,.hero-cta button{width:100%;box-sizing:border-box;justify-content:center;}
-  .hero-cta a{display:block;text-align:center;}
+  /* keep just the faculty name up top and the headline at the bottom on phones — meta pills and CTA row add up to too much */
+  .hero{align-items:flex-end;}
+  .hero-inner{padding-top:calc(78px + 1.5rem);padding-bottom:calc(60px + env(safe-area-inset-bottom) + 1.5rem);}
+  .hero-eyebrow{
+    display:inline-flex;position:fixed;z-index:2;
+    top:calc(78px + 1rem);left:clamp(1.25rem,4vw,3rem);
+  }
+  .hero-meta,.hero-cta{display:none;}
+  .hero h1{font-size:clamp(1.3rem,6vw,1.75rem);max-width:100%;margin-top:0;line-height:1.2;text-align:left;}
 }
 
 /* quick-access rail: the slim tab itself grows/morphs into the menu panel on hover */
@@ -441,6 +446,8 @@ p{margin:0;}
   }
   .rail-strip a:hover{border-color:var(--garnet);background:var(--grad-flash-soft);color:var(--garnet-deep);}
 }
+/* on phones the bottom app tab bar already covers quick access — drop the extra strip to declutter */
+@media (max-width:900px){ .rail-strip{display:none;} }
 
 /* ---------- section heading ---------- */
 .section{
@@ -540,10 +547,25 @@ p{margin:0;}
 
 @media (max-width:860px){
   .news-grid{grid-template-columns:1fr;}
-  .news-feature{min-height:340px;}
+  .news-feature{min-height:280px;}
+  .news-feature-media{min-height:160px;}
 }
-@media (max-width:520px){
-  .news-item{flex-wrap:wrap;}
+@media (max-width:640px){
+  .news-filters{gap:.4rem;margin-bottom:1.4rem;}
+  .news-filter{padding:.42rem .85rem;font-size:.74rem;}
+  .news-feature{min-height:220px;border-radius:16px;}
+  .news-feature-media{min-height:120px;}
+  .news-feature-body{padding:1.1rem 1.2rem 1.3rem;}
+  .news-feature-body h3{font-size:1.05rem;margin:.45rem 0 .5rem;}
+  .news-feature-body p{
+    font-size:.82rem;line-height:1.5;
+    display:-webkit-box;-webkit-line-clamp:3;line-clamp:3;-webkit-box-orient:vertical;overflow:hidden;
+  }
+  .news-list{gap:.6rem;}
+  .news-item{padding:.6rem;gap:.7rem;}
+  .news-item-media{width:48px;height:48px;border-radius:8px;}
+  .news-item-body h4{font-size:.82rem;margin-bottom:.2rem;}
+  .news-item-date{font-size:.62rem;}
 }
 
 /* ---------- stats ---------- */
@@ -592,34 +614,26 @@ p{margin:0;}
 }
 @media (max-width:980px){ .stats-grid{grid-template-columns:repeat(3, minmax(0,170px));} }
 @media (max-width:640px){
-  .stats-grid{
-    display:flex;justify-content:flex-start;
-    overflow-x:auto;scroll-snap-type:x proximity;scrollbar-width:none;
-    gap:.7rem;padding:.2rem clamp(1.25rem,4vw,3rem) .5rem;
-    margin:0 calc(-1 * clamp(1.25rem,4vw,3rem));
-  }
-  .stats-grid::-webkit-scrollbar{display:none;}
-  .stat-card{flex:0 0 130px;scroll-snap-align:start;padding:1.1rem .8rem;}
-  .stat-icon{width:38px;height:38px;margin-bottom:.6rem;}
-  .stat-icon svg{width:17px;height:17px;}
-  .stat-number{font-size:1.15rem;}
-  .stat-label{font-size:.58rem;}
+  .stats-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:.7rem;}
+  .stat-card:last-child:nth-child(odd){grid-column:1 / -1;}
+  .stat-card{padding:1rem .8rem;}
+  .stat-icon{width:36px;height:36px;margin-bottom:.55rem;}
+  .stat-icon svg{width:16px;height:16px;}
+  .stat-number{font-size:1.1rem;}
+  .stat-label{font-size:.56rem;}
 }
 
-/* ---------- fixed hero backdrop: a light scroll snaps the next section to fully cover the screen, stacking over what's behind ---------- */
-.hero-spacer{height:0;}
-@media (min-width:901px){
-  .hero-spacer{height:100vh;height:100dvh;}
-  .hero{
-    position:fixed;top:0;left:0;
-    width:100%;height:100vh;height:100dvh;
-    margin-top:0;
-    z-index:0;
-  }
-  .section{position:relative;z-index:1;box-shadow:0 -50px 90px -35px rgba(20,17,28,.4);}
-  footer{position:relative;z-index:1;}
-  .rail-strip{position:relative;z-index:1;}
+/* ---------- fixed hero backdrop: a light scroll snaps the next section to fully cover the screen, stacking over what's behind (all breakpoints, so mobile scrolls the same way as desktop) ---------- */
+.hero-spacer{height:100vh;height:100dvh;}
+.hero{
+  position:fixed;top:0;left:0;
+  width:100%;height:100vh;height:100dvh;
+  margin-top:0;
+  z-index:0;
 }
+.section{position:relative;z-index:1;box-shadow:0 -50px 90px -35px rgba(20,17,28,.4);}
+footer{position:relative;z-index:1;}
+.rail-strip{position:relative;z-index:1;}
 .section-head{display:flex;align-items:baseline;justify-content:space-between;gap:1.5rem;margin-bottom:2.4rem;flex-wrap:wrap;}
 .section-head h2{
   font-size:clamp(1.8rem,2.4vw,2.5rem);
@@ -630,6 +644,10 @@ p{margin:0;}
   font-family:var(--font-mono);font-size:.78rem;color:#fff;
   padding:.3rem .7rem;border-radius:99px;background:var(--grad-flash);
   box-shadow:var(--glow-garnet);
+}
+@media (max-width:640px){
+  .section-head{margin-bottom:1.3rem;}
+  .section-head h2{font-size:clamp(1.5rem,7vw,1.9rem);}
 }
 
 /* ---------- discover showcase: static grid of numbered spotlight cards ---------- */
@@ -671,9 +689,17 @@ p{margin:0;}
   .discover-card--wide{grid-column:span 2;}
 }
 @media (max-width:560px){
-  .discover-grid{grid-template-columns:1fr;}
-  .discover-card--wide{grid-column:span 1;}
-  .discover-card-media{height:150px;}
+  .discover-grid{grid-template-columns:repeat(2,1fr);gap:.7rem;}
+  .discover-card-media{height:88px;}
+  .discover-card-body{padding:.8rem .85rem .95rem;}
+  .discover-tag{font-size:.56rem;padding:.2rem .5rem;margin-bottom:.4rem;}
+  .discover-card-body h3{font-size:.86rem;line-height:1.25;}
+  .discover-card-body p{
+    font-size:.72rem;margin-top:.3rem;line-height:1.4;
+    display:-webkit-box;-webkit-line-clamp:2;line-clamp:2;-webkit-box-orient:vertical;overflow:hidden;
+  }
+  .discover-link{margin-top:.55rem;font-size:.7rem;}
+  .discover-link svg{width:12px;height:12px;}
 }
 
 /* ---------- announcements ---------- */
@@ -748,10 +774,20 @@ p{margin:0;}
   }
   .announce-tabs::-webkit-scrollbar{display:none;}
   .announce-tab{white-space:nowrap;flex:none;}
-  .announce-timeline::before{left:27px;}
-  .announce-tl-item{gap:1.1rem;}
-  .announce-tl-marker{width:54px;height:54px;}
-  .announce-tl-item.is-latest .announce-tl-marker{width:60px;height:60px;}
+  .announce-timeline::before{left:23px;}
+  .announce-tl-item{gap:.85rem;padding-bottom:1.1rem;}
+  .announce-tl-marker{width:46px;height:46px;}
+  .announce-tl-marker .day{font-size:1rem;}
+  .announce-tl-marker .month{font-size:.5rem;}
+  .announce-tl-item.is-latest .announce-tl-marker{width:52px;height:52px;}
+  .announce-tl-content{padding:.9rem 1rem 1rem;}
+  .announce-tl-content h4{font-size:.86rem;margin-bottom:.3rem;}
+  .announce-tl-item.is-latest .announce-tl-content h4{font-size:.92rem;}
+  .announce-tl-content p{
+    font-size:.76rem;line-height:1.45;
+    display:-webkit-box;-webkit-line-clamp:2;line-clamp:2;-webkit-box-orient:vertical;overflow:hidden;
+  }
+  .announce-tl-content .announce-link{margin-top:.55rem;font-size:.76rem;}
 }
 
 /* ---------- footer ---------- */
