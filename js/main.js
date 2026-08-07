@@ -156,65 +156,7 @@ window.addEventListener('resize', () => {
   });
 })();
 
-// ---------- shared: draggable scroll strip + progress thumb ----------
-function initDragScroller(track, thumb, prevBtn, nextBtn, step){
-  if (!track || !thumb) return () => {};
-
-  function updateThumb(){
-    const ratio = track.clientWidth / track.scrollWidth;
-    const thumbWidth = Math.max(ratio * 100, 8);
-    const maxScroll = track.scrollWidth - track.clientWidth;
-    const scrollRatio = maxScroll > 0 ? track.scrollLeft / maxScroll : 0;
-    thumb.style.width = thumbWidth + '%';
-    thumb.style.left = scrollRatio * (100 - thumbWidth) + '%';
-  }
-
-  track.addEventListener('scroll', updateThumb);
-  if (prevBtn) prevBtn.addEventListener('click', () => track.scrollBy({ left: -step, behavior: 'smooth' }));
-  if (nextBtn) nextBtn.addEventListener('click', () => track.scrollBy({ left: step, behavior: 'smooth' }));
-
-  let dragging = false, startX = 0, startScroll = 0, moved = false;
-  const suppressClick = (e) => { e.stopPropagation(); e.preventDefault(); };
-  track.addEventListener('pointerdown', (e) => {
-    dragging = true; moved = false;
-    startX = e.clientX; startScroll = track.scrollLeft;
-    track.classList.add('dragging');
-    track.setPointerCapture(e.pointerId);
-  });
-  track.addEventListener('pointermove', (e) => {
-    if (!dragging) return;
-    const dx = e.clientX - startX;
-    if (Math.abs(dx) > 4) moved = true;
-    track.scrollLeft = startScroll - dx;
-  });
-  track.addEventListener('pointerup', (e) => {
-    if (!dragging) return;
-    dragging = false;
-    track.classList.remove('dragging');
-    track.releasePointerCapture(e.pointerId);
-    if (moved) track.querySelectorAll('a').forEach(a => a.addEventListener('click', suppressClick, { once:true, capture:true }));
-  });
-
-  updateThumb();
-  return updateThumb;
-}
-
-// ---------- announcements: tabs + draggable scroll strip ----------
-function initAnnounceScroller(panel){
-  return initDragScroller(
-    panel.querySelector('.announce-track'),
-    panel.querySelector('.announce-scrollbar-thumb'),
-    panel.querySelector('.announce-prev'),
-    panel.querySelector('.announce-next'),
-    300
-  );
-}
-
-const announceUpdaters = new Map();
-document.querySelectorAll('.announce-panel').forEach(panel => {
-  announceUpdaters.set(panel.dataset.panel, initAnnounceScroller(panel));
-});
-
+// ---------- announcements: tab switching ----------
 document.querySelectorAll('.announce-tab').forEach(tab => {
   tab.addEventListener('click', () => {
     const target = tab.dataset.tab;
@@ -223,17 +165,7 @@ document.querySelectorAll('.announce-tab').forEach(tab => {
       t.setAttribute('aria-selected', t === tab ? 'true' : 'false');
     });
     document.querySelectorAll('.announce-panel').forEach(p => p.classList.toggle('active', p.dataset.panel === target));
-    const update = announceUpdaters.get(target);
-    if (update) requestAnimationFrame(update);
   });
-});
-
-window.addEventListener('resize', () => {
-  const activePanel = document.querySelector('.announce-panel.active');
-  if (activePanel){
-    const update = announceUpdaters.get(activePanel.dataset.panel);
-    if (update) update();
-  }
 });
 
 // ---------- news filter pills (visual toggle) ----------
